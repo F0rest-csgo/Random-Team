@@ -36,7 +36,7 @@ public void OnRoundStart(Event event, const char[] name, bool dontBroadcast)
 	
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if(IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) > CS_TEAM_NONE && GetClientTeam(i) < CS_TEAM_SPECTATOR)
+		if(IsValidClient && GetClientTeam(i) > CS_TEAM_NONE && GetClientTeam(i) < CS_TEAM_SPECTATOR)
 		{
 			team = GetRandomInt(1, 2);
 			CS_SwitchTeam(i, team);
@@ -69,8 +69,8 @@ public void OnRoundStart(Event event, const char[] name, bool dontBroadcast)
 
 void RandomlySwitchTeam(int from,int team_to)
 {
-	int i;
-	while(GetClientTeam(i) != from)
+	int i = GetRandomInt(1,MaxClients);
+	while(IsValidClient(i) && GetClientTeam(i) != from)
 	{
 		i = GetRandomInt(1, MaxClients);
 	}
@@ -88,4 +88,11 @@ int GetTeamClientCount(int team)
 		}
 	}
 	return count;
+}
+
+bool IsValidClient(int client) {
+	if (!(1 <= client <= MaxClients) || !IsClientInGame(client) || !IsClientConnected(client) || IsFakeClient(client) || IsClientSourceTV(client))
+		return false;
+	
+	return true;
 }
